@@ -1,7 +1,7 @@
 ## ASCII Torus
 
 ### Description
-ASCII Torus is a simple console application that renders a rotating 3D torus (donut shape) using ASCII characters. It demonstrates basic 3D graphics concepts and animation within a text-based interface.
+ASCII Torus is a simple Python console application that renders a rotating 3D torus (donut shape) using ASCII characters. It demonstrates basic 3D graphics concepts and animation within a text-based interface.
 
 ### Features
 - Real-time rotation of a 3D torus
@@ -10,7 +10,7 @@ ASCII Torus is a simple console application that renders a rotating 3D torus (do
 
 ### How to Run
 1. Clone the repository.
-2. Compile the source code using your preferred compiler.
+2. Run the script using Python 3.
 3. Run the executable in a terminal or command prompt.
 
 ### License
