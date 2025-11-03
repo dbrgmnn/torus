@@ -76,7 +76,7 @@ def compute_point(theta: float, phi: float, rotation_x: float, rotation_z: float
 
 def render_frame(rotation_x: float, rotation_z: float, width: int, height: int, half_width: float, half_height: float) -> List[str]:
     output = [' '] * (width * height)
-    buffer = [0.0] * (width * height)
+    zbuffer = [0.0] * (width * height)
 
     for theta in frange(0, 2 * math.pi, THETA_SPACING):
         for phi in frange(0, 2 * math.pi, PHI_SPACING):
@@ -84,8 +84,8 @@ def render_frame(rotation_x: float, rotation_z: float, width: int, height: int, 
 
             if 0 <= x_screen < width and 0 <= y_screen < height:
                 idx = x_screen + y_screen * width
-                if depth > buffer[idx]:
-                    buffer[idx] = depth
+                if depth > zbuffer[idx]:
+                    zbuffer[idx] = depth
                     color_index = int(luminance_index / (NUM_SHADES - 1) * (len(COLORS) - 1))
                     color = COLORS[color_index]
                     output[idx] = f"{color}{SHADES[luminance_index]}\033[0m"
