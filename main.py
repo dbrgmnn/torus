@@ -14,6 +14,17 @@ DEPTH_OFFSET = 5.0
 SHADES = ".,-~:;=!*#$@"
 NUM_SHADES = len(SHADES)
 
+COLORS = [
+    "\033[38;5;22m",   # dark green
+    "\033[38;5;28m",
+    "\033[38;5;34m",
+    "\033[38;5;40m",
+    "\033[38;5;46m",
+    "\033[38;5;82m",   # bright green
+    "\033[38;5;118m",
+    "\033[38;5;154m"   # very bright green
+]
+
 SCALE_X = 30
 SCALE_Y = 15
 
@@ -75,7 +86,9 @@ def render_frame(rotation_x: float, rotation_z: float, width: int, height: int, 
                 idx = x_screen + y_screen * width
                 if depth > buffer[idx]:
                     buffer[idx] = depth
-                    output[idx] = SHADES[luminance_index]
+                    color_index = int(luminance_index / (NUM_SHADES - 1) * (len(COLORS) - 1))
+                    color = COLORS[color_index]
+                    output[idx] = f"{color}{SHADES[luminance_index]}\033[0m"
 
     return output
 
