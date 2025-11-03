@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASCII Torus</title>
+<style>
+  body {
+    background-color: black;
+    color: #00ff00;
+    font-family: monospace;
+    white-space: pre;
+    margin: 0;
+    overflow: hidden;
+  }
+  #ascii {
+    line-height: 1em;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<pre id="ascii"></pre>
+
+<script>
+const asciiElement = document.getElementById('ascii');
+
+const width = Math.floor(window.innerWidth / 8);
+const height = Math.floor(window.innerHeight / 16);
+const SHADES = ".,-~:;=!*#$@";
+const SCALE_X = 30;
+const SCALE_Y = 15;
+const TORUS_RADIUS = 2;
+const TUBE_RADIUS = 1;
+const DEPTH_OFFSET = 5;
+
+let rotationX = 0;
+let rotationZ = 0;
+
+function frange(start, stop, step) {
+  const result = [];
+  for (let v = start; v < stop; v += step) result.push(v);
+  return result;
+}
+
+function renderFrame() {
+  const output = Array(width * height).fill(' ');
+  const zbuffer = Array(width * height).fill(0);
+
+  for (let theta of frange(0, 2 * Math.PI, 0.07)) {
+    for (let phi of frange(0, 2 * Math.PI, 0.02)) {
+      const cosTheta = Math.cos(theta);
+      const sinTheta = Math.sin(theta);
+      const cosPhi = Math.cos(phi);
+      const sinPhi = Math.sin(phi);
+      const cosRotX = Math.cos(rotationX);
+      const sinRotX = Math.sin(rotationX);
+      const cosRotZ = Math.cos(rotationZ);
+      const sinRotZ = Math.sin(rotationZ);
+
+      const circleX = TORUS_RADIUS + TUBE_RADIUS * cosTheta;
+      const circleY = TUBE_RADIUS * sinTheta;
+
+      const x = (circleX * (cosRotZ * cosPhi + sinRotX * sinRotZ * sinPhi) - circleY * cosRotX * sinRotZ);
+      const y = (circleX * (sinRotZ * cosPhi - sinRotX * cosRotZ * sinPhi) + circleY * cosRotX * cosRotZ);
+      const z = (cosRotX * circleX * sinPhi + circleY * sinRotX + DEPTH_OFFSET);
+      const ooz = 1 / z;
+
+      const x_screen = Math.floor(width / 2 + SCALE_X * ooz * x);
+      const y_screen = Math.floor(height / 2 - SCALE_Y * ooz * y);
+
+      const luminance = cosPhi * cosTheta * sinRotZ - cosRotX * cosTheta * sinPhi - sinRotX * sinTheta + cosRotZ * (cosRotX * sinTheta - cosTheta * sinRotX * sinPhi);
+      let luminanceIndex = Math.floor(((luminance + 1.5) / 3) * (SHADES.length - 1));
+      luminanceIndex = Math.max(0, Math.min(luminanceIndex, SHADES.length - 1));
+
+      if (x_screen >= 0 && x_screen < width && y_screen >= 0 && y_screen < height) {
+        const idx = x_screen + y_screen * width;
+        if (ooz > zbuffer[idx]) {
+          zbuffer[idx] = ooz;
+          output[idx] = SHADES[luminanceIndex];
+        }
+      }
+    }
+  }
+
+  let frameStr = '';
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      const char = output[i * width + j];
+      frameStr += `<span style=\"color:#00ff00\">${char}</span>`;
+    }
+    frameStr += '\n';
+  }
+  asciiElement.innerHTML = frameStr;
+
+  rotationX += 0.07;
+  rotationZ += 0.03;
+}
+
+setInterval(renderFrame, 40);
+</script>
+</body>
+</html>
