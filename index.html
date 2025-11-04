@@ -11,21 +11,34 @@
     white-space: pre;
     margin: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
   }
   #ascii {
     line-height: 1em;
-    font-size: 12px;
+    font-size: calc(10px + 0.3vw);
+    text-align: center;
   }
 </style>
 </head>
 <body>
+
 <pre id="ascii"></pre>
+<div id="timer" style="color:#00ff00; text-align:center; position:fixed; bottom:20px; width:100%; font-family:monospace; font-size:14px;"></div>
 
 <script>
 const asciiElement = document.getElementById('ascii');
 
-const width = Math.floor(window.innerWidth / 8);
-const height = Math.floor(window.innerHeight / 16);
+let width = Math.floor(window.innerWidth / 8);
+let height = Math.floor(window.innerHeight / 16);
+
+window.addEventListener('resize', () => {
+  width = Math.floor(window.innerWidth / 8);
+  height = Math.floor(window.innerHeight / 16);
+});
 const SHADES = ".,-~:;=!*#$@";
 const SCALE_X = 30;
 const SCALE_Y = 15;
@@ -96,6 +109,23 @@ function renderFrame() {
   rotationZ += 0.03;
 }
 
+let startTime = Date.now();
+const timerElement = document.getElementById('timer');
+setInterval(() => {
+  const elapsed = Date.now() - startTime;
+  const days = Math.floor(elapsed / 86400000);
+  const hours = Math.floor((elapsed % 86400000) / 3600000);
+  const minutes = Math.floor((elapsed % 3600000) / 60000);
+  const seconds = Math.floor((elapsed % 60000) / 1000);
+  const milliseconds = Math.floor((elapsed % 1000) / 10);
+  const formattedTime =
+    `${days}d ` +
+    `${String(hours).padStart(2, '0')}:` +
+    `${String(minutes).padStart(2, '0')}:` +
+    `${String(seconds).padStart(2, '0')}.` +
+    `${String(milliseconds).padStart(2, '0')}`;
+  timerElement.textContent = formattedTime;
+}, 50);
 setInterval(renderFrame, 40);
 </script>
 </body>
