@@ -109,7 +109,7 @@ function renderFrame() {
   rotationZ += 0.03;
 }
 
-let startTime = Date.now();
+const startTime = new Date('2025-11-04T00:00:00Z').getTime();
 const timerElement = document.getElementById('timer');
 setInterval(() => {
   const elapsed = Date.now() - startTime;
