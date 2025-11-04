@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASCII Torus</title>
-<style>
-  body {
-    background-color: black;
-    color: #00ff00;
-    font-family: monospace;
-    white-space: pre;
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  #ascii {
-    line-height: 1em;
-    font-size: calc(10px + 0.3vw);
-    text-align: center;
-  }
-</style>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torus</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='50%' y='50%' font-size='24' text-anchor='middle' alignment-baseline='middle' fill='lime'>Ø</text></svg>">
+  <style>
+    body {
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      white-space: pre;
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #ascii {
+      line-height: 1em;
+      font-size: calc(10px + 0.3vw);
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
@@ -99,7 +100,7 @@ function renderFrame() {
   for (let i = 0; i < height; i++) {
     for (let j = 0; j < width; j++) {
       const char = output[i * width + j];
-      frameStr += `<span style=\"color:#00ff00\">${char}</span>`;
+      frameStr += `<span style="color:#00ff00">${char}</span>`;
     }
     frameStr += '\n';
   }
