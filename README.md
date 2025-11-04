@@ -4,7 +4,7 @@ This project was inspired by the idea of contemporary art and the question: what
 
 ### Variants
 - **Terminal (Python)**: Run in a console using `python terminal/main.py`.
-- **Browser (HTML/JS)**: Open [browser version](https://dbrgmnn.github.io/tor/).
+- **Browser (HTML/JS)**: Open [browser version](https://dbrgmnn.github.io/torus/).
 
 ### License
 This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
