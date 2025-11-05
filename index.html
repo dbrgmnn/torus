@@ -22,16 +22,27 @@
       line-height: 1em;
       font-size: calc(10px + 0.3vw);
       text-align: center;
+      color: #00ff00;
+    }
+    #timer {
+      color: #00ff00;
+      text-align: center;
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      font-family: monospace;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
 <pre id="ascii"></pre>
-<div id="timer" style="color:#00ff00; text-align:center; position:fixed; bottom:20px; width:100%; font-family:monospace; font-size:14px;"></div>
+<div id="timer"></div>
 
 <script>
 const asciiElement = document.getElementById('ascii');
+const timerElement = document.getElementById('timer');
 
 let width = Math.floor(window.innerWidth / 8);
 let height = Math.floor(window.innerHeight / 16);
@@ -50,18 +61,12 @@ const DEPTH_OFFSET = 5;
 let rotationX = 0;
 let rotationZ = 0;
 
-function frange(start, stop, step) {
-  const result = [];
-  for (let v = start; v < stop; v += step) result.push(v);
-  return result;
-}
-
 function renderFrame() {
   const output = Array(width * height).fill(' ');
   const zbuffer = Array(width * height).fill(0);
 
-  for (let theta of frange(0, 2 * Math.PI, 0.07)) {
-    for (let phi of frange(0, 2 * Math.PI, 0.02)) {
+  for (let theta = 0; theta < 2 * Math.PI; theta += 0.07) {
+    for (let phi = 0; phi < 2 * Math.PI; phi += 0.02) {
       const cosTheta = Math.cos(theta);
       const sinTheta = Math.sin(theta);
       const cosPhi = Math.cos(phi);
@@ -95,39 +100,31 @@ function renderFrame() {
       }
     }
   }
-
   let frameStr = '';
   for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
-      const char = output[i * width + j];
-      frameStr += `<span style="color:#00ff00">${char}</span>`;
-    }
-    frameStr += '\n';
+    frameStr += output.slice(i * width, (i + 1) * width).join('') + '\n';
   }
-  asciiElement.innerHTML = frameStr;
 
-  rotationX += 0.07;
-  rotationZ += 0.03;
+  asciiElement.textContent = frameStr;
+
+  rotationX += 0.035;
+  rotationZ += 0.015;
+  requestAnimationFrame(renderFrame);
 }
 
 const startTime = new Date('2025-11-04T00:00:00Z').getTime();
-const timerElement = document.getElementById('timer');
-setInterval(() => {
+function updateTimer() {
   const elapsed = Date.now() - startTime;
   const days = Math.floor(elapsed / 86400000);
   const hours = Math.floor((elapsed % 86400000) / 3600000);
   const minutes = Math.floor((elapsed % 3600000) / 60000);
   const seconds = Math.floor((elapsed % 60000) / 1000);
   const milliseconds = Math.floor((elapsed % 1000) / 10);
-  const formattedTime =
-    `${days}d ` +
-    `${String(hours).padStart(2, '0')}:` +
-    `${String(minutes).padStart(2, '0')}:` +
-    `${String(seconds).padStart(2, '0')}.` +
-    `${String(milliseconds).padStart(2, '0')}`;
-  timerElement.textContent = formattedTime;
-}, 50);
-setInterval(renderFrame, 40);
+  timerElement.textContent = `${days}d ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${String(milliseconds).padStart(2,'0')}`;
+}
+setInterval(updateTimer, 50);
+
+renderFrame();
 </script>
 </body>
 </html>
