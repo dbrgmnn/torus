@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Torus</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='50%' y='50%' font-size='24' text-anchor='middle' alignment-baseline='middle' fill='lime'>Ø</text></svg>">
   <style>
@@ -24,6 +25,15 @@
       text-align: center;
       color: #00ff00;
     }
+    #visits {
+      color: #00ff00;
+      text-align: center;
+      position: fixed;
+      bottom: 50px;
+      width: 100%;
+      font-family: monospace;
+      font-size: 14px;
+    }
     #timer {
       color: #00ff00;
       text-align: center;
@@ -38,11 +48,13 @@
 <body>
 
 <pre id="ascii"></pre>
+<div id="visits"></div>
 <div id="timer"></div>
 
 <script>
 const asciiElement = document.getElementById('ascii');
 const timerElement = document.getElementById('timer');
+const visitsElement = document.getElementById('visits');
 
 let width = Math.floor(window.innerWidth / 8);
 let height = Math.floor(window.innerHeight / 16);
@@ -51,6 +63,7 @@ window.addEventListener('resize', () => {
   width = Math.floor(window.innerWidth / 8);
   height = Math.floor(window.innerHeight / 16);
 });
+
 const SHADES = ".,-~:;=!*#$@";
 const SCALE_X = 30;
 const SCALE_Y = 15;
@@ -123,6 +136,21 @@ function updateTimer() {
   timerElement.textContent = `${days}d ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${String(milliseconds).padStart(2,'0')}`;
 }
 setInterval(updateTimer, 50);
+
+const PROXY = "https://visit-counter.dmtrbrgmnn.workers.dev/";
+async function updateVisits() {
+  if (!localStorage.getItem('visited')) {
+    const res = await fetch(PROXY, { method: 'POST' });
+    const data = await res.json();
+    visitsElement.textContent = `${data.value}`;
+    localStorage.setItem('visited', 'true');
+  } else {
+    const res = await fetch(PROXY);
+    const data = await res.json();
+    visitsElement.textContent = `${data.value}`;
+  }
+}
+updateVisits();
 
 renderFrame();
 </script>
