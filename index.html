@@ -139,10 +139,17 @@ function updateTimer() {
 const PROXY = "https://visit-counter.dmtrbrgmnn.workers.dev/";
 async function updateVisits() {
   try {
-    const res = await fetch(PROXY);
-    const data = await res.json();
+    let data;
+    if (!localStorage.getItem('visited')) {
+      const res = await fetch(PROXY, { method: 'POST', mode: 'cors' });
+      data = await res.json();
+      localStorage.setItem('visited', 'true');
+    } else {
+      const res = await fetch(PROXY, { mode: 'cors' });
+      data = await res.json();
+    }
     visitsElement.textContent = data.value;
-  } catch(e) {
+  } catch (e) {
     console.error("Error counter:", e);
     visitsElement.textContent = "—";
   }
