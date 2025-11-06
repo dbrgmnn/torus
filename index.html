@@ -73,8 +73,15 @@ const DEPTH_OFFSET = 5;
 
 let rotationX = 0;
 let rotationZ = 0;
+let lastTime = performance.now();
 
-function renderFrame() {
+function renderFrame(now) {
+  const delta = (now - lastTime) / 1000;
+  lastTime = now;
+
+  rotationX += 0.035 * delta * 60;
+  rotationZ += 0.015 * delta * 60;
+
   const output = Array(width * height).fill(' ');
   const zbuffer = Array(width * height).fill(0);
 
@@ -113,15 +120,10 @@ function renderFrame() {
       }
     }
   }
-  let frameStr = '';
-  for (let i = 0; i < height; i++) {
-    frameStr += output.slice(i * width, (i + 1) * width).join('') + '\n';
-  }
+  asciiElement.textContent = output.reduce((str, char, i) => {
+    return str + char + ((i + 1) % width === 0 ? '\n' : '');
+  }, '');
 
-  asciiElement.textContent = frameStr;
-
-  rotationX += 0.035;
-  rotationZ += 0.015;
   requestAnimationFrame(renderFrame);
 }
 
@@ -156,7 +158,7 @@ async function updateVisits() {
 }
 
 function init() {
-  renderFrame();
+  requestAnimationFrame(renderFrame);
   updateTimer();
   updateVisits();
 
