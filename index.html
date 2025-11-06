@@ -135,24 +135,29 @@ function updateTimer() {
   const milliseconds = Math.floor((elapsed % 1000) / 10);
   timerElement.textContent = `${days}d ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${String(milliseconds).padStart(2,'0')}`;
 }
-setInterval(updateTimer, 50);
 
 const PROXY = "https://visit-counter.dmtrbrgmnn.workers.dev/";
 async function updateVisits() {
-  if (!localStorage.getItem('visited')) {
-    const res = await fetch(PROXY, { method: 'POST' });
-    const data = await res.json();
-    visitsElement.textContent = `${data.value}`;
-    localStorage.setItem('visited', 'true');
-  } else {
+  try {
     const res = await fetch(PROXY);
     const data = await res.json();
-    visitsElement.textContent = `${data.value}`;
+    visitsElement.textContent = data.value;
+  } catch(e) {
+    console.error("Error counter:", e);
+    visitsElement.textContent = "—";
   }
 }
-updateVisits();
 
-renderFrame();
+function init() {
+  renderFrame();
+  updateTimer();
+  updateVisits();
+
+  setInterval(updateTimer, 50);
+  setInterval(updateVisits, 3000);
+}
+
+init();
 </script>
 </body>
 </html>
