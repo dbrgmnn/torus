@@ -5,42 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Torus</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='50%' y='50%' font-size='24' text-anchor='middle' alignment-baseline='middle' fill='lime'>Ø</text></svg>">
-  <style>
-    :root {
-      --primary-color: #00ff00;
-      --bg-color: #000;
-      --glow-color: rgba(0, 255, 0, 0.3);
-    }
-    body {
-      background-color: var(--bg-color);
-      color: var(--primary-color);
-      font-family: 'Courier New', monospace;
-      margin: 0;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-shadow: 0 0 5px var(--glow-color);
-    }
-    #ascii {
-      line-height: 1em;
-      font-size: calc(8px + 0.3vw);
-      text-align: center;
-      white-space: pre;
-    }
-    .footer {
-      position: fixed;
-      bottom: 20px;
-      width: 100%;
-      text-align: center;
-      font-size: 14px;
-      letter-spacing: 1px;
-    }
-    #visits::before { content: "VISITS: "; opacity: 0.6; }
-    #timer { margin-top: 10px; opacity: 0.8; }
-  </style>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
