@@ -6,11 +6,15 @@
   <title>Torus</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='50%' y='50%' font-size='24' text-anchor='middle' alignment-baseline='middle' fill='lime'>Ø</text></svg>">
   <style>
+    :root {
+      --primary-color: #00ff00;
+      --bg-color: #000;
+      --glow-color: rgba(0, 255, 0, 0.3);
+    }
     body {
-      background-color: black;
-      color: #00ff00;
-      font-family: monospace;
-      white-space: pre;
+      background-color: var(--bg-color);
+      color: var(--primary-color);
+      font-family: 'Courier New', monospace;
       margin: 0;
       overflow: hidden;
       display: flex;
@@ -18,154 +22,38 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      text-shadow: 0 0 5px var(--glow-color);
     }
     #ascii {
       line-height: 1em;
-      font-size: calc(10px + 0.3vw);
+      font-size: calc(8px + 0.3vw);
       text-align: center;
-      color: #00ff00;
+      white-space: pre;
     }
-    #visits {
-      color: #00ff00;
-      text-align: center;
-      position: fixed;
-      bottom: 50px;
-      width: 100%;
-      font-family: monospace;
-      font-size: 14px;
-    }
-    #timer {
-      color: #00ff00;
-      text-align: center;
+    .footer {
       position: fixed;
       bottom: 20px;
       width: 100%;
-      font-family: monospace;
+      text-align: center;
       font-size: 14px;
+      letter-spacing: 1px;
     }
+    #visits::before { content: "VISITS: "; opacity: 0.6; }
+    #timer { margin-top: 10px; opacity: 0.8; }
   </style>
 </head>
 <body>
 
 <pre id="ascii"></pre>
-<div id="visits"></div>
-<div id="timer"></div>
 
-<script>
-const asciiElement = document.getElementById('ascii');
-const timerElement = document.getElementById('timer');
-const visitsElement = document.getElementById('visits');
+<div class="footer">
+  <div id="visits"></div>
+  <div id="timer"></div>
+</div>
 
-let width = Math.floor(window.innerWidth / 8);
-let height = Math.floor(window.innerHeight / 16);
-
-window.addEventListener('resize', () => {
-  width = Math.floor(window.innerWidth / 8);
-  height = Math.floor(window.innerHeight / 16);
-});
-
-const SHADES = ".,-~:;=!*#$@";
-const SCALE_X = 30;
-const SCALE_Y = 15;
-const TORUS_RADIUS = 2;
-const TUBE_RADIUS = 1;
-const DEPTH_OFFSET = 5;
-
-let rotationX = 0;
-let rotationZ = 0;
-let lastTime = performance.now();
-
-function renderFrame(now) {
-  const delta = (now - lastTime) / 1000;
-  lastTime = now;
-
-  rotationX += 0.035 * delta * 60;
-  rotationZ += 0.015 * delta * 60;
-
-  const output = Array(width * height).fill(' ');
-  const zbuffer = Array(width * height).fill(0);
-
-  for (let theta = 0; theta < 2 * Math.PI; theta += 0.07) {
-    for (let phi = 0; phi < 2 * Math.PI; phi += 0.02) {
-      const cosTheta = Math.cos(theta);
-      const sinTheta = Math.sin(theta);
-      const cosPhi = Math.cos(phi);
-      const sinPhi = Math.sin(phi);
-      const cosRotX = Math.cos(rotationX);
-      const sinRotX = Math.sin(rotationX);
-      const cosRotZ = Math.cos(rotationZ);
-      const sinRotZ = Math.sin(rotationZ);
-
-      const circleX = TORUS_RADIUS + TUBE_RADIUS * cosTheta;
-      const circleY = TUBE_RADIUS * sinTheta;
-
-      const x = (circleX * (cosRotZ * cosPhi + sinRotX * sinRotZ * sinPhi) - circleY * cosRotX * sinRotZ);
-      const y = (circleX * (sinRotZ * cosPhi - sinRotX * cosRotZ * sinPhi) + circleY * cosRotX * cosRotZ);
-      const z = (cosRotX * circleX * sinPhi + circleY * sinRotX + DEPTH_OFFSET);
-      const ooz = 1 / z;
-
-      const x_screen = Math.floor(width / 2 + SCALE_X * ooz * x);
-      const y_screen = Math.floor(height / 2 - SCALE_Y * ooz * y);
-
-      const luminance = cosPhi * cosTheta * sinRotZ - cosRotX * cosTheta * sinPhi - sinRotX * sinTheta + cosRotZ * (cosRotX * sinTheta - cosTheta * sinRotX * sinPhi);
-      let luminanceIndex = Math.floor(((luminance + 1.5) / 3) * (SHADES.length - 1));
-      luminanceIndex = Math.max(0, Math.min(luminanceIndex, SHADES.length - 1));
-
-      if (x_screen >= 0 && x_screen < width && y_screen >= 0 && y_screen < height) {
-        const idx = x_screen + y_screen * width;
-        if (ooz > zbuffer[idx]) {
-          zbuffer[idx] = ooz;
-          output[idx] = SHADES[luminanceIndex];
-        }
-      }
-    }
-  }
-  asciiElement.textContent = output.reduce((str, char, i) => {
-    return str + char + ((i + 1) % width === 0 ? '\n' : '');
-  }, '');
-
-  requestAnimationFrame(renderFrame);
-}
-
-const startTime = new Date('2025-11-04T00:00:00Z').getTime();
-function updateTimer() {
-  const elapsed = Date.now() - startTime;
-  const days = Math.floor(elapsed / 86400000);
-  const hours = Math.floor((elapsed % 86400000) / 3600000);
-  const minutes = Math.floor((elapsed % 3600000) / 60000);
-  const seconds = Math.floor((elapsed % 60000) / 1000);
-  timerElement.textContent = `${days}d ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
-}
-
-const PROXY = "https://visit-counter.dmtrbrgmnn.workers.dev/";
-async function updateVisits() {
-  try {
-    let data;
-    if (!localStorage.getItem('visited')) {
-      const res = await fetch(PROXY, { method: 'POST', mode: 'cors' });
-      data = await res.json();
-      localStorage.setItem('visited', 'true');
-    } else {
-      const res = await fetch(PROXY, { mode: 'cors' });
-      data = await res.json();
-    }
-    visitsElement.textContent = data.value;
-  } catch (e) {
-    console.error("Error counter:", e);
-    visitsElement.textContent = "—";
-  }
-}
-
-function init() {
-  requestAnimationFrame(renderFrame);
-  updateTimer();
-  updateVisits();
-
-  setInterval(updateTimer, 50);
-  setInterval(updateVisits, 3000);
-}
-
-init();
+<script type="module">
+  import { init } from './assets/js/web.js';
+  init();
 </script>
 </body>
 </html>
