@@ -24,7 +24,7 @@ function renderFrame(now) {
     rotationZ += 0.015 * delta * 60;
 
     const output = computeFrame(width, height, rotationX, rotationZ, false);
-    
+
     let rendered = "";
     for (let i = 0; i < output.length; i++) {
         rendered += output[i];
@@ -43,7 +43,7 @@ function updateTimer() {
     const hours = Math.floor((elapsed % 86400000) / 3600000);
     const minutes = Math.floor((elapsed % 3600000) / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
-    timerElement.textContent = `${days}d ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    timerElement.textContent = `${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 // Visit Counter Logic
